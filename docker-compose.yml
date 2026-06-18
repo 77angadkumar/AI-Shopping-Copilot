@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  # MongoDB Database Container
+  mongodb:
+    image: mongo:latest
+    container_name: amz_rufus_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - amz_network
+    restart: unless-stopped
+
+  # Next.js Application Container
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: amz_rufus_web
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongodb:27017/amazon-assistant
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-YOUR_OPENAI_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-YOUR_GEMINI_API_KEY}
+    depends_on:
+      - mongodb
+    networks:
+      - amz_network
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
+
+networks:
+  amz_network:
+    driver: bridge
