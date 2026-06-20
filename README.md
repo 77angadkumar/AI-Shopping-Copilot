@@ -66,7 +66,7 @@ amazon-shopping-assistant/
 │   │   ├── api/                # API Handlers (/chat, /search, /compare, etc.)
 │   │   ├── chat/               # Conversational Chat Panel
 │   │   ├── compare/            # Side-by-side Comparison Matrix
-│   │   ├── dashboard/          # Profile & System Metrics Diagnostics
++│   │   ├── dashboard/          # Profile & System Metrics Diagnostics
 │   │   ├── product/[id]/       # Product Specification Sheet & AI Summary
 │   │   ├── layout.tsx
 │   │   ├── globals.css         # Typography, Transitions & Custom Variables
