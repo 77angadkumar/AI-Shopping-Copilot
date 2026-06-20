@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/db";
-import { searchProducts } from "@/lib/vectorStore";
+import { executeHybridSearch } from "@/lib/hybridSearch";
+import { rerankProducts } from "@/lib/reranker";
+import UserPreference from "@/lib/models/UserPreference";
 
 export async function GET(req: NextRequest) {
   try {
@@ -12,6 +14,7 @@ export async function GET(req: NextRequest) {
     const brand = searchParams.get("brand") || undefined;
     const minPrice = searchParams.get("minPrice") ? Number(searchParams.get("minPrice")) : undefined;
     const maxPrice = searchParams.get("maxPrice") ? Number(searchParams.get("maxPrice")) : undefined;
+    const userId = searchParams.get("userId") || "anonymous";
 
     if (!query) {
       return NextResponse.json({
@@ -27,13 +30,21 @@ export async function GET(req: NextRequest) {
       maxPrice,
     };
 
-    const results = await searchProducts(query, filters, 8);
+    // 1. Fetch user preferences context
+    const preference = await UserPreference.findOne({ userId });
+
+    // 2. Execute hybrid search
+    const candidates = await executeHybridSearch(query, filters, 15);
+
+    // 3. Rerank based on user profile context
+    const reranked = await rerankProducts(candidates, preference || undefined);
+    const topResults = reranked.slice(0, 8);
 
     return NextResponse.json({
       success: true,
       query,
       filters,
-      results: results.map(r => ({
+      results: topResults.map(r => ({
         product: {
           _id: r.product._id,
           title: r.product.title,
@@ -47,6 +58,8 @@ export async function GET(req: NextRequest) {
           specifications: r.product.specifications,
         },
         score: r.score,
+        originalScore: r.originalScore,
+        boosts: r.boosts
       })),
     }, { status: 200 });
 
