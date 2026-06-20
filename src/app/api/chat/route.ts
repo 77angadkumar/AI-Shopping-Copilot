@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
       };
       session.messages.push(userMsg);
 
-      const rHistory = session.messages.map(h => ({ role: h.role, content: h.content }));
+      const rHistory = (session.messages as IMessage[]).map(h => ({ role: h.role, content: h.content }));
       const responseContent = await generateRAGResponse(
         `Provide a helpful shopping comparison and recommendation for products matching: ${slotSummary}`,
         rHistory.slice(0, -1),
@@ -255,11 +255,6 @@ export async function POST(req: NextRequest) {
     session.messages.push(userMsg);
 
     // 6. Generate grounded RAG response
-    const formattedHistory = history.map(h => ({
-      role: h.role,
-      content: h.content,
-    }));
-
     const responseContent = await generateRAGResponse(message, formattedHistory, orderedProducts, preference);
 
     // Save assistant message to history with links to retrieved products

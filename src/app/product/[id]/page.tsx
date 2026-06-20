@@ -16,6 +16,7 @@ import ReviewAnalysisSection from "@/components/product/ReviewAnalysisSection";
 import { getProductReviewSummary, getProductReviews } from "@/lib/reviewService";
 import { ReviewAnalysisResult } from "@/lib/reviewAnalyzer";
 import UserPreference from "@/lib/models/UserPreference";
+import PriceTracker from "@/components/product/PriceTracker";
 
 interface ProductPageProps {
   params: Promise<{
@@ -148,6 +149,9 @@ export default async function ProductDetailsPage({ params }: ProductPageProps) {
                 {product.availability || "Free Delivery"}
               </Badge>
             </div>
+
+            {/* Price Trend Graph */}
+            <PriceTracker productId={product._id} />
           </div>
 
           {/* Right panel: Details details */}
