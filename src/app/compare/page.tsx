@@ -9,6 +9,7 @@ import ProductSpecTable from "@/components/product/ProductSpecTable";
 import { generateComparisonAnalysis } from "@/lib/llm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import ComparisonDashboard from "@/components/product/ComparisonDashboard";
 
 interface ComparePageProps {
   searchParams: {
@@ -81,80 +82,10 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
           </div>
         ) : (
           <div>
-            {/* 1. AI Recommendation Panel */}
-            {analysis && (
-              <section className="bg-gradient-to-r from-amber-500/5 to-amber-500/10 border border-amber-500/20 rounded-2xl p-6 mb-8 shadow-sm">
-                <div className="flex items-center gap-2 mb-4">
-                  <Sparkles className="h-5 w-5 text-amber-500 animate-pulse" />
-                  <h3 className="text-base font-extrabold text-foreground flex items-center gap-1.5">
-                    AI Side-by-Side Advisor Analysis
-                    <span className="text-[10px] bg-amber-500 text-black px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
-                      Rufus Synthesis
-                    </span>
-                  </h3>
-                </div>
-                
-                <p className="text-sm text-foreground/90 leading-relaxed mb-6">
-                  {analysis.summary}
-                </p>
-
-                {/* Grid showing Pros/Cons for each compared product */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {products.map((p) => {
-                    const insights = analysis.prosCons[p._id.toString()] || { pros: [], cons: [] };
-                    return (
-                      <div key={p._id} className="bg-card border border-border rounded-xl p-4 shadow-sm flex flex-col justify-between">
-                        <div>
-                          <Badge variant="outline" className="mb-2 uppercase text-[9px] tracking-wider font-bold">
-                            {p.brand}
-                          </Badge>
-                          <h4 className="text-sm font-bold text-foreground line-clamp-1 mb-3">
-                            {p.title}
-                          </h4>
-                          
-                          {/* Pros */}
-                          <div className="mb-4">
-                            <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest block mb-1.5">
-                              Pros
-                            </span>
-                            <ul className="space-y-1">
-                              {insights.pros.map((pro: string, idx: number) => (
-                                <li key={idx} className="text-[11px] text-muted-foreground flex items-start gap-1.5">
-                                  <span className="text-emerald-500">✓</span>
-                                  <span>{pro}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-
-                          {/* Cons */}
-                          <div>
-                            <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest block mb-1.5">
-                              Cons
-                            </span>
-                            <ul className="space-y-1">
-                              {insights.cons.map((con: string, idx: number) => (
-                                <li key={idx} className="text-[11px] text-muted-foreground flex items-start gap-1.5">
-                                  <span className="text-red-500">✗</span>
-                                  <span>{con}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
-
-                        <div className="border-t border-border/50 pt-3 mt-4 flex items-center justify-between text-xs">
-                          <span className="font-extrabold text-foreground">₹{p.price.toLocaleString()}</span>
-                          <Link href={`/product/${p._id}`} className="text-amber-500 hover:underline">
-                            View details →
-                          </Link>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-            )}
+            {/* Advanced Comparison Dashboard (Phase 5) */}
+            <div className="mb-8">
+              <ComparisonDashboard products={products} aiAnalysis={analysis} />
+            </div>
 
             {/* 2. Side-by-Side Specs Grid Table */}
             <section className="mb-12">
