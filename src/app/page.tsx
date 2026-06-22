@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Search, Sparkles, Laptop, Smartphone, Headphones, Tablet, Watch, ChevronRight, TrendingUp } from "lucide-react";
+import { Search, Sparkles, Laptop, Smartphone, Headphones, Tablet, Watch, ChevronRight, TrendingUp, Camera } from "lucide-react";
+import ImageSearch from "@/components/product/ImageSearch";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/layout/Navbar";
@@ -17,6 +18,12 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [trendingProducts, setTrendingProducts] = useState<ProductData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showImageSearch, setShowImageSearch] = useState(false);
+
+  const handleSelectProduct = (product: any) => {
+    setShowImageSearch(false);
+    router.push(`/product/${product._id}`);
+  };
 
   const categories = [
     { id: "all", name: "All Products", icon: ShoppingBagIcon },
@@ -85,8 +92,16 @@ export default function Home() {
                   placeholder="Ask Rufus (e.g., suggest a coding laptop under 80k)..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-11 h-12 text-base shadow-lg border-2 border-transparent bg-card text-foreground focus:border-amber-500"
+                  className="pl-11 pr-12 h-12 text-base shadow-lg border-2 border-transparent bg-card text-foreground focus:border-amber-500"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowImageSearch(true)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white transition-all cursor-pointer bg-transparent border-none"
+                  title="Search by image"
+                >
+                  <Camera className="h-5 w-5" />
+                </button>
               </div>
               <Button type="submit" variant="accent" className="h-12 px-6 font-bold cursor-pointer">
                 Ask Rufus
@@ -151,6 +166,16 @@ export default function Home() {
       </main>
 
       <Footer />
+
+      {/* Image Search Modal (Phase 7) */}
+      {showImageSearch && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <ImageSearch
+            onSelectProduct={handleSelectProduct}
+            onClose={() => setShowImageSearch(false)}
+          />
+        </div>
+      )}
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { Send, Sparkles, MessageSquare, Laptop, ShoppingBag, ArrowRight } from "lucide-react";
+import { Send, Sparkles, MessageSquare, Laptop, ShoppingBag, ArrowRight, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ import ChatMessage, { ChatMessageProps } from "./ChatMessage";
 import VoiceInput from "./VoiceInput";
 import ProductCard, { ProductData } from "../product/ProductCard";
 import CompareWidget, { SelectedProduct } from "../product/CompareWidget";
+import ImageSearch from "../product/ImageSearch";
 
 
 // Simple helper to generate a UUID
@@ -26,6 +27,19 @@ export default function ChatWindow() {
   const [sessions, setSessions] = useState<ChatSessionMeta[]>([]);
   const [contextProducts, setContextProducts] = useState<ProductData[]>([]);
   const [selectedCompare, setSelectedCompare] = useState<SelectedProduct[]>([]);
+  const [showImageSearch, setShowImageSearch] = useState(false);
+
+  const handleSelectImageProduct = (product: any) => {
+    setShowImageSearch(false);
+    // Add to contextProducts so it shows in the right sidebar
+    setContextProducts((prev) => {
+      if (prev.some((p) => p._id === product._id)) return prev;
+      return [product, ...prev];
+    });
+    // Trigger prompt details
+    setInputValue(`Tell me details about the ${product.title}`);
+    handleSendMessage(`Tell me details about the ${product.title}`);
+  };
 
   const chatEndRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
@@ -293,14 +307,24 @@ export default function ChatWindow() {
             {/* Voice microphone helper */}
             <VoiceInput onTranscript={handleVoiceTranscript} disabled={isLoading} />
 
-            <Input
-              type="text"
-              placeholder="Ask Rufus (e.g. Compare the 1st and 2nd products)..."
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              disabled={isLoading}
-              className="flex-grow"
-            />
+            <div className="relative flex-grow">
+              <Input
+                type="text"
+                placeholder="Ask Rufus (e.g. Compare the 1st and 2nd products)..."
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                disabled={isLoading}
+                className="w-full pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowImageSearch(true)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white transition-all cursor-pointer bg-transparent border-none"
+                title="Search by image"
+              >
+                <Camera className="h-5 w-5" />
+              </button>
+            </div>
             
             <Button
               type="submit"
@@ -362,6 +386,16 @@ export default function ChatWindow() {
         onRemove={(id) => setSelectedCompare((prev) => prev.filter((p) => p._id !== id))}
         onClear={() => setSelectedCompare([])}
       />
+
+      {/* Image Search Modal (Phase 7) */}
+      {showImageSearch && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <ImageSearch
+            onSelectProduct={handleSelectImageProduct}
+            onClose={() => setShowImageSearch(false)}
+          />
+        </div>
+      )}
     </div>
   );
 }
