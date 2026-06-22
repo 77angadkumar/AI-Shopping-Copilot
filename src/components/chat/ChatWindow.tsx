@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import ChatHistorySidebar, { ChatSessionMeta } from "./ChatHistorySidebar";
 import ChatMessage, { ChatMessageProps } from "./ChatMessage";
-import VoiceInput from "./VoiceInput";
+import VoiceAssistant from "./VoiceAssistant";
 import ProductCard, { ProductData } from "../product/ProductCard";
 import CompareWidget, { SelectedProduct } from "../product/CompareWidget";
 import ImageSearch from "../product/ImageSearch";
@@ -304,8 +304,12 @@ export default function ChatWindow() {
             }}
             className="flex items-center gap-2"
           >
-            {/* Voice microphone helper */}
-            <VoiceInput onTranscript={handleVoiceTranscript} disabled={isLoading} />
+            {/* Voice microphone and speaker assistant */}
+            <VoiceAssistant
+              onTranscript={handleVoiceTranscript}
+              disabled={isLoading}
+              lastResponse={messages.length > 0 && messages[messages.length - 1].role === "assistant" ? messages[messages.length - 1].content : ""}
+            />
 
             <div className="relative flex-grow">
               <Input
