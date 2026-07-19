@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { withRetry } from "./services/cacheService";
 
 export interface ChatMessage {
   role: "user" | "assistant" | "system";
@@ -194,11 +195,13 @@ ${productContext}`;
         { role: "user", content: query }
       ];
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: apiMessages,
-        temperature: 0.4,
-      });
+      const response = await withRetry(() =>
+        openai.chat.completions.create({
+          model: "gpt-4o",
+          messages: apiMessages,
+          temperature: 0.4,
+        })
+      );
 
       return response.choices[0].message.content || "";
     } catch (e) {
@@ -223,7 +226,7 @@ ${productContext}`;
         { role: "user", parts: [{ text: query }] }
       ];
 
-      const result = await model.generateContent({ contents });
+      const result = await withRetry(() => model.generateContent({ contents }));
       const response = await result.response;
       return response.text();
     } catch (e) {
