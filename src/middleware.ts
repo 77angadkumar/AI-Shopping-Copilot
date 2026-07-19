@@ -9,7 +9,7 @@ const WINDOW_MS = 60 * 1000;
 const MAX_REQUESTS = 60;
 
 export function middleware(request: NextRequest) {
-  const ip = request.headers.get("x-forwarded-for") || request.ip || "unknown-ip";
+  const ip = request.headers.get("x-forwarded-for") || (request as any).ip || "unknown-ip";
   const now = Date.now();
 
   // Retrieve previous logs for this IP

@@ -176,7 +176,7 @@ export default function ComparisonDashboard({ products, aiAnalysis }: Comparison
                 const labelOffset = 18;
                 const labelX = cx + (rMax + labelOffset) * Math.cos(angle);
                 const labelY = cy + (rMax + labelOffset) * Math.sin(angle);
-                let textAnchor = "middle";
+                let textAnchor: "middle" | "start" | "end" = "middle";
                 if (Math.cos(angle) > 0.1) textAnchor = "start";
                 else if (Math.cos(angle) < -0.1) textAnchor = "end";
 
