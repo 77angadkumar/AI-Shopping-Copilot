@@ -108,12 +108,12 @@ amazon-shopping-assistant/
    ```bash
    copy .env.example .env.local
    ```
-4. **Seed the Database**:
-   Start your local MongoDB instance. In another terminal, run:
+4. **Seed the Database (Products, Reviews, & Price Histories)**:
+   Start your local MongoDB instance, then seed the data:
    ```bash
-   npm run dev
+   npm run seed
    ```
-   Now send a `POST` request to `http://localhost:3000/api/db/seed` (via curl or Postman) to populate your database with vectorized products:
+   *Alternative*: Trigger the API seeder endpoint (seeds mock products only):
    ```bash
    curl -X POST http://localhost:3000/api/db/seed
    ```

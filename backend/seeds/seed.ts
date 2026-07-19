@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import Product from "../../src/lib/models/Product";
 import Review from "../../src/lib/models/Review";
+import PriceHistory from "../../src/lib/models/PriceHistory";
 import { getEmbedding } from "../../src/lib/vectorStore";
 
 // Load environment configurations
@@ -81,6 +82,46 @@ async function runSeeder() {
     const insertedProducts = await Product.insertMany(productsToSave);
     console.log(`✅ Seeded ${insertedProducts.length} products successfully.`);
 
+    // 2b. Seed Price History snapshots (Phase 9)
+    console.log("Generating price history snapshots...");
+    await PriceHistory.deleteMany({});
+    const priceHistoriesToSave = [];
+    const today = new Date();
+
+    for (const p of insertedProducts) {
+      const historyPoints = [];
+      const basePrice = p.price;
+
+      for (let i = 14; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+
+        let factor = 1.0;
+        if (i === 10) factor = 1.05;
+        else if (i === 7) factor = 0.95;
+        else if (i === 3) factor = 0.90;
+        else if (i === 0) factor = 1.0;
+        else {
+          factor = 0.9 + Math.random() * 0.15;
+        }
+
+        const priceVal = i === 0 ? basePrice : Math.round((basePrice * factor) / 10) * 10;
+        historyPoints.push({
+          price: priceVal,
+          date
+        });
+      }
+
+      priceHistoriesToSave.push({
+        productId: p._id,
+        currentPrice: basePrice,
+        history: historyPoints
+      });
+    }
+
+    await PriceHistory.insertMany(priceHistoriesToSave);
+    console.log(`✅ Seeded ${priceHistoriesToSave.length} price histories successfully.`);
+
     // 3. Insert Reviews, mapping their referenced product ID
     console.log("Processing and mapping review entries...");
     const reviewsToSave = [];
@@ -121,6 +162,7 @@ async function runSeeder() {
     }
     await Product.createIndexes();
     await Review.createIndexes();
+    await PriceHistory.createIndexes();
     console.log("✅ Text and reference indices created successfully.");
 
     console.log("\n==================================================");
