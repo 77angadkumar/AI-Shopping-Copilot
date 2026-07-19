@@ -58,11 +58,11 @@ export default function ProductGrid({ products, onAskRufus }: ProductGridProps) 
   return (
     <div className="relative">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-24">
-        {products.map((product) => (
+        {products.map((product, idx) => (
           <ProductCard
-            key={product._id}
+            key={product?._id || (product as any)?.id || idx}
             product={product}
-            isComparing={selectedCompare.some((p) => p._id === product._id)}
+            isComparing={selectedCompare.some((p) => p._id === product?._id)}
             onCompareToggle={handleCompareToggle}
             onAskRufus={onAskRufus}
           />

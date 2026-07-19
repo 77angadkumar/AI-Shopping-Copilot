@@ -37,7 +37,8 @@ export default function ProductCard({
   explanations,
 }: ProductCardProps) {
   const [imageError, setImageError] = React.useState(false);
-  const imageUrl = product.imageUrl || product.image;
+  const productId = product?._id || (product as any)?.id || "";
+  const imageUrl = product?.imageUrl || product?.image || "";
   const isExternalImage = imageUrl && imageUrl.startsWith("http") && !imageError;
 
   // Render high-quality fallback device icons with gradients
@@ -45,7 +46,7 @@ export default function ProductCard({
     const iconClass = "h-12 w-12 text-white/90 drop-shadow-md";
     const containerClass = "relative w-full h-full flex items-center justify-center overflow-hidden bg-gradient-to-br";
 
-    switch (category.toLowerCase()) {
+    switch ((category || "").toLowerCase()) {
       case "laptops":
         return (
           <div className={`${containerClass} from-slate-700 to-slate-900 border-b border-border/10`}>
@@ -98,42 +99,48 @@ export default function ProductCard({
         {isExternalImage ? (
           <img
             src={imageUrl}
-            alt={product.title}
+            alt={product?.title || "Product"}
             className="w-full h-full object-cover rounded-t-xl transition-transform duration-300 group-hover:scale-105"
             loading="lazy"
             onError={() => setImageError(true)}
           />
         ) : (
-          renderProductImageFallback(product.category)
+          renderProductImageFallback(product?.category || "")
         )}
         
         {/* Rating Floating Badge */}
         <div className="absolute top-2 left-2">
           <Badge variant="secondary" className="glass flex items-center gap-1 font-bold text-foreground py-0.5 border-border/50">
-            ⭐ {product.rating}
+            ⭐ {product?.rating || 0}
           </Badge>
         </div>
 
         {/* Brand floating label */}
         <div className="absolute top-2 right-2">
           <Badge variant="outline" className="glass font-bold text-foreground py-0.5 border-border/50 uppercase tracking-wider text-[9px]">
-            {product.brand}
+            {product?.brand || "Generic"}
           </Badge>
         </div>
       </div>
 
       <CardHeader className="p-4 pb-1">
-        <Link href={`/product/${product._id}`} className="hover:underline">
+        {productId ? (
+          <Link href={`/product/${productId}`} className="hover:underline">
+            <CardTitle className="text-sm font-bold line-clamp-2 text-foreground h-10 leading-tight">
+              {product?.title || "Product"}
+            </CardTitle>
+          </Link>
+        ) : (
           <CardTitle className="text-sm font-bold line-clamp-2 text-foreground h-10 leading-tight">
-            {product.title}
+            {product?.title || "Product"}
           </CardTitle>
-        </Link>
+        )}
       </CardHeader>
 
       <CardContent className="p-4 py-2 flex-grow flex flex-col justify-between">
         {/* Features Bullet List */}
         <ul className="space-y-1.5 mb-4 text-xs text-muted-foreground">
-          {product.features.slice(0, 2).map((feat, idx) => (
+          {(product?.features || []).slice(0, 2).map((feat, idx) => (
             <li key={idx} className="line-clamp-1 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
               {feat}
@@ -160,19 +167,19 @@ export default function ProductCard({
         <div className="flex items-baseline gap-1 mt-auto">
           <span className="text-xs font-semibold text-muted-foreground">INR</span>
           <span className="text-xl font-extrabold text-foreground">
-            ₹{product.price.toLocaleString("en-IN")}
+            ₹{(product?.price || 0).toLocaleString("en-IN")}
           </span>
         </div>
       </CardContent>
 
       <CardFooter className="p-4 pt-3 flex items-center justify-between border-t border-border/50 gap-2">
         {/* Compare Checkbox Switcher */}
-        {onCompareToggle && (
+        {onCompareToggle && productId && (
           <Button
             type="button"
             variant={isComparing ? "accent" : "outline"}
             size="sm"
-            onClick={() => onCompareToggle(product._id)}
+            onClick={() => onCompareToggle(productId)}
             className="flex items-center gap-1 h-8 px-2.5 cursor-pointer text-xs"
           >
             {isComparing ? (
@@ -190,7 +197,7 @@ export default function ProductCard({
         )}
 
         <div className="flex gap-1 items-center">
-          {onAskRufus && (
+          {onAskRufus && product?.title && (
             <Button
               type="button"
               variant="ghost"
@@ -203,11 +210,13 @@ export default function ProductCard({
             </Button>
           )}
 
-          <Link href={`/product/${product._id}`}>
-            <Button variant="ghost" size="sm" className="h-8 text-xs cursor-pointer hover:bg-muted">
-              Specs
-            </Button>
-          </Link>
+          {productId && (
+            <Link href={`/product/${productId}`}>
+              <Button variant="ghost" size="sm" className="h-8 text-xs cursor-pointer hover:bg-muted">
+                Specs
+              </Button>
+            </Link>
+          )}
         </div>
       </CardFooter>
     </Card>
