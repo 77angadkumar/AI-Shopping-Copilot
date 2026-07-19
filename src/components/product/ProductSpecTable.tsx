@@ -24,6 +24,8 @@ interface ProductSpecTableProps {
 }
 
 export default function ProductSpecTable({ products }: ProductSpecTableProps) {
+  const [imageErrors, setImageErrors] = React.useState<Record<string, boolean>>({});
+
   if (products.length === 0) return null;
 
   // Extract all unique specification keys across all products
@@ -33,9 +35,29 @@ export default function ProductSpecTable({ products }: ProductSpecTableProps) {
     )
   );
 
-  const renderFallbackIcon = (category: string) => {
+  const renderProductPhoto = (p: ComparisonProduct) => {
+    const imageUrl = (p as any).imageUrl || p.image;
+    const hasImage = imageUrl && imageUrl.startsWith("http") && !imageErrors[p._id];
+
+    if (hasImage) {
+      return (
+        <div className="relative h-28 w-full rounded-lg overflow-hidden border border-border bg-muted/20">
+          <img
+            src={imageUrl}
+            alt={p.title}
+            className="w-full h-full object-cover transition-transform hover:scale-105"
+            loading="lazy"
+            onError={() => {
+              setImageErrors((prev) => ({ ...prev, [p._id]: true }));
+            }}
+          />
+        </div>
+      );
+    }
+
     const iconClass = "h-8 w-8 text-white/90";
-    const baseClass = "h-20 w-full rounded-md flex items-center justify-center bg-gradient-to-br";
+    const baseClass = "h-28 w-full rounded-lg flex items-center justify-center bg-gradient-to-br";
+    const category = p.category || "";
     
     switch (category.toLowerCase()) {
       case "laptops":
@@ -63,8 +85,8 @@ export default function ProductSpecTable({ products }: ProductSpecTableProps) {
             </TableHead>
             {products.map((p) => (
               <TableHead key={p._id} className="min-w-[200px] align-top py-4">
-                <div className="flex flex-col gap-2">
-                  {renderFallbackIcon(p.category)}
+                <div className="flex flex-col gap-3">
+                  {renderProductPhoto(p)}
                   <Badge variant="outline" className="w-fit text-[9px] uppercase tracking-wider">
                     {p.brand}
                   </Badge>

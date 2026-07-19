@@ -326,20 +326,32 @@ export default function ComparisonDashboard({ products, aiAnalysis }: Comparison
             pros: ["High quality hardware specs", "Reliable performance in catalog testing"],
             cons: ["Price premium over local brands"]
           };
+          const imageUrl = p.imageUrl || p.image;
+          const hasImage = imageUrl && imageUrl.startsWith("http");
 
           return (
             <div key={p._id} className="relative overflow-hidden rounded-2xl border border-white/10 bg-slate-900/40 p-6 backdrop-blur-md shadow-lg flex flex-col justify-between">
               <div>
                 <div className="flex justify-between items-start gap-4 mb-4">
-                  <div>
-                    <Badge variant="outline" className={`uppercase text-[9px] tracking-wider font-bold mb-1.5 ${color.bg} ${color.text} border-none`}>
-                      {p.brand}
-                    </Badge>
-                    <h4 className="text-base font-extrabold text-white line-clamp-1">
-                      {p.title}
-                    </h4>
+                  <div className="flex items-center gap-3">
+                    {hasImage && (
+                      <img
+                        src={imageUrl}
+                        alt={p.title}
+                        className="w-12 h-12 rounded-xl object-cover border border-white/10 shrink-0 shadow-sm"
+                        loading="lazy"
+                      />
+                    )}
+                    <div>
+                      <Badge variant="outline" className={`uppercase text-[9px] tracking-wider font-bold mb-1.5 ${color.bg} ${color.text} border-none`}>
+                        {p.brand}
+                      </Badge>
+                      <h4 className="text-base font-extrabold text-white line-clamp-1">
+                        {p.title}
+                      </h4>
+                    </div>
                   </div>
-                  <span className="text-lg font-black text-white">₹{p.price.toLocaleString()}</span>
+                  <span className="text-lg font-black text-white shrink-0">₹{p.price.toLocaleString()}</span>
                 </div>
 
                 {/* Pros */}

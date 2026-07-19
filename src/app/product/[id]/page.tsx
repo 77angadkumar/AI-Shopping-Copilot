@@ -129,15 +129,18 @@ export default async function ProductDetailsPage({ params }: ProductPageProps) {
           
           {/* Left panel: Image or Fallbacks */}
           <div className="lg:col-span-5 flex flex-col gap-4">
-            {product.imageUrl && product.imageUrl.startsWith("http") ? (
-              <img
-                src={product.imageUrl}
-                alt={product.title}
-                className="w-full h-80 rounded-2xl object-cover shadow-md"
-              />
-            ) : (
-              renderFallbackBanner(product.category)
-            )}
+            {(() => {
+              const imgUrl = product.imageUrl || product.image;
+              return imgUrl && imgUrl.startsWith("http") ? (
+                <img
+                  src={imgUrl}
+                  alt={product.title}
+                  className="w-full h-80 rounded-2xl object-cover shadow-md"
+                />
+              ) : (
+                renderFallbackBanner(product.category)
+              );
+            })()}
             <div className="flex gap-2 justify-center">
               <Badge variant="outline" className="text-xs uppercase py-1 border-border/50">
                 In Stock
