@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Star, ShoppingCart, ShieldCheck, Heart, Sparkles, AlertCircle, Laptop, Smartphone, Headphones, Tablet, Watch } from "lucide-react";
+import { ArrowLeft, Star, ShoppingCart, ShieldCheck, Heart, Sparkles, AlertCircle, Laptop, Smartphone, Headphones, Tablet, Watch, Camera } from "lucide-react";
 import { connectToDatabase } from "@/lib/db";
 import Product, { IProduct } from "@/lib/models/Product";
 import Navbar from "@/components/layout/Navbar";
@@ -104,6 +104,8 @@ export default async function ProductDetailsPage({ params }: ProductPageProps) {
         return <div className={`${bannerClass} from-emerald-700 to-slate-900`}><Tablet className={iconClass} /></div>;
       case "smartwatches":
         return <div className={`${bannerClass} from-rose-700 to-indigo-900`}><Watch className={iconClass} /></div>;
+      case "cameras":
+        return <div className={`${bannerClass} from-amber-700 to-slate-900`}><Camera className={iconClass} /></div>;
       default:
         return <div className={`${bannerClass} from-slate-700 to-slate-900`}><Laptop className={iconClass} /></div>;
     }

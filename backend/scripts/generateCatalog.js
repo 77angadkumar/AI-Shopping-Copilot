@@ -41,7 +41,8 @@ const BRANDS = {
   monitors: ["LG", "Samsung", "Dell", "BenQ", "ASUS", "Acer"],
   keyboards: ["Logitech", "Razer", "Corsair", "Keychron", "Redragon"],
   mice: ["Logitech", "Razer", "Corsair", "SteelSeries", "Redragon"],
-  gaming_accessories: ["Razer", "Logitech", "Corsair", "ASUS ROG", "HyperX", "SteelSeries"]
+  gaming_accessories: ["Razer", "Logitech", "Corsair", "ASUS ROG", "HyperX", "SteelSeries"],
+  cameras: ["Sony", "Canon", "Nikon", "Fujifilm", "Panasonic"]
 };
 
 const UNSPLASH_IMAGES = {
@@ -54,7 +55,8 @@ const UNSPLASH_IMAGES = {
   monitors: ["1527443224154-c4a3942d3acf", "1585776245991-cf89dd7fc73a", "1547082299-de196ea013d6", "1551645121-d1034da75057"],
   keyboards: ["1587829741301-dc798b83add3", "1618384887929-16ec33fab9ef", "1595225476474-87563907a212", "1614088685112-0a55517237a0"],
   mice: ["1615663245857-ac93bb7c39e7", "1625842268584-8f3290447036", "1605773527852-c543735f41c8", "1617050318658-ec2b281f6d90"],
-  gaming_accessories: ["1600861195091-690c92f1d2cc", "1542751371-adc38448a05e", "1538481199705-c710c4e965fc", "1593305841608-85e8242407eb"]
+  gaming_accessories: ["1600861195091-690c92f1d2cc", "1542751371-adc38448a05e", "1538481199705-c710c4e965fc", "1593305841608-85e8242407eb"],
+  cameras: ["1516035069371-29a1b244cc32", "1616440347437-b1c73416efc2", "1500643752441-4dcf4006b50f", "1607604276583-eef5d076aa5f", "1502920917128-1aa500764cbd"]
 };
 
 const CATEGORY_MAP = {
@@ -67,7 +69,8 @@ const CATEGORY_MAP = {
   monitors: "Monitors",
   keyboards: "Keyboards",
   mice: "Mice",
-  gaming_accessories: "Gaming Accessories"
+  gaming_accessories: "Gaming Accessories",
+  cameras: "Cameras"
 };
 
 const MODEL_ADJECTIVES = ["Pro", "Ultra", "Elite", "Max", "Air", "Prime", "Gaming", "Slim", "Classic", "Plus", "Edition", "Studio", "Strix", "TUF", "IdeaPad", "Inspiron", "ZenBook", "Galaxy", "Pixel", "XPS"];
@@ -224,6 +227,30 @@ function generateProductDataset() {
           ];
           tags = ["watch", "smartwatch", "fitness", "gps", "heart", "steps", "health", "workout"];
           description = `Stay tracked and connected with the ${brand} smart fitness ${categoryName.toLowerCase()}. Features precision health trackers, sleep stage coaching, and customizable faces built into a premium swimproof case.`;
+          break;
+
+        case "cameras":
+          title = `${brand} ${adjective} ${randomChoice(["Alpha R", "EOS Mark IV", "Z Mirrorless", "Lumix GH", "X-T5 Creator"])}`;
+          price = brand === "Sony" || brand === "Canon" ? randomRange(85000, 245000) : randomRange(45000, 150000);
+          originalPrice = Math.floor(price * (1 + randomRange(5, 20) / 100));
+
+          specs = {
+            Sensor: randomChoice(["Full-Frame CMOS", "APS-C CMOS", "Micro Four Thirds", "1-inch BSI CMOS"]),
+            Resolution: randomChoice(["24.2 MP", "33.0 MP", "45.0 MP", "26.1 MP", "20.1 MP"]),
+            "Lens Mount": brand === "Sony" ? "Sony E-Mount" : brand === "Canon" ? "Canon RF" : brand === "Nikon" ? "Nikon Z" : brand === "Fujifilm" ? "Fujifilm X" : "Micro Four Thirds",
+            "Video Resolution": randomChoice(["4K 60p", "4K 120p", "8K 30p", "4K 30p", "1080p 120p"]),
+            "ISO Range": randomChoice(["100 - 51,200", "100 - 102,400", "80 - 102,400", "160 - 51,200"]),
+            "Image Stabilization": randomChoice(["5-axis In-body (IBIS)", "Lens-shift Stabilization", "None", "Digital Stabilization"]),
+            Weight: `${randomRange(350, 780)}g`
+          };
+          features = [
+            "Advanced Hybrid Autofocus with Real-time Eye AF tracking",
+            "Dual UHS-II SD card slots for secure recording backups",
+            "Weather-sealed magnesium alloy chassis and controls",
+            "High-resolution OLED electronic view finder"
+          ];
+          tags = ["camera", "photography", "lens", "video", "4k", "mirrorless", "dslr", "vlogging", "sony", "canon"];
+          description = `A professional ${categoryName.toLowerCase()} designed by ${brand}. Featuring a cutting-edge ${specs.Sensor} sensor with ${specs.Resolution} resolution and ${specs["Image Stabilization"]} for gorgeous shots. Perfect for professional filmmaking, portraiture, street photography, and content creation.`;
           break;
 
         case "headphones":

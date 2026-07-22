@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Laptop, Smartphone, Headphones, Tablet, Watch } from "lucide-react";
+import { Laptop, Smartphone, Headphones, Tablet, Watch, Camera } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
@@ -70,6 +70,8 @@ export default function ProductSpecTable({ products }: ProductSpecTableProps) {
         return <div className={`${baseClass} from-emerald-700 to-slate-900`}><Tablet className={iconClass} /></div>;
       case "smartwatches":
         return <div className={`${baseClass} from-rose-700 to-indigo-900`}><Watch className={iconClass} /></div>;
+      case "cameras":
+        return <div className={`${baseClass} from-amber-700 to-slate-900`}><Camera className={iconClass} /></div>;
       default:
         return <div className={`${baseClass} from-slate-700 to-slate-900`}><Laptop className={iconClass} /></div>;
     }

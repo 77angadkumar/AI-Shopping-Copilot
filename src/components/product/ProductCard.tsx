@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Star, Laptop, Smartphone, Headphones, Tablet, Watch, MessageSquare, Plus, Check } from "lucide-react";
+import { Star, Laptop, Smartphone, Headphones, Tablet, Watch, Camera, MessageSquare, Plus, Check } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -80,6 +80,13 @@ export default function ProductCard({
           <div className={`${containerClass} from-rose-700 to-indigo-900 border-b border-border/10`}>
             <Watch className={iconClass} />
             <div className="absolute bottom-2 right-2 text-[10px] font-mono text-white/40 uppercase tracking-widest">Wrist Engine</div>
+          </div>
+        );
+      case "cameras":
+        return (
+          <div className={`${containerClass} from-amber-700 to-slate-900 border-b border-border/10`}>
+            <Camera className={iconClass} />
+            <div className="absolute bottom-2 right-2 text-[10px] font-mono text-white/40 uppercase tracking-widest">Optic sensor</div>
           </div>
         );
       default:
