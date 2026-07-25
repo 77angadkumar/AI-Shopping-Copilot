@@ -73,6 +73,44 @@ const CATEGORY_MAP = {
   cameras: "Cameras"
 };
 
+const BRAND_IMAGES = {
+  laptops: {
+    Apple: "1517336714731-489689fd1ca8",
+    Dell: "1593642632823-8f785ba67e45",
+    ASUS: "1603302576837-37561b2e2302",
+    HP: "1496181130204-7552cc14ac1a",
+    Lenovo: "1588872657578-7efd1f1555ed",
+    MSI: "1603302576837-37561b2e2302",
+    Acer: "1588872657578-7efd1f1555ed"
+  },
+  smartphones: {
+    Apple: "1511707171634-5f897ff02aa9",
+    Samsung: "1610945265064-0e34e5519bbf",
+    OnePlus: "1580910051074-3eb694886505",
+    Google: "1598327105666-5b89351aff97",
+    Xiaomi: "1511707171634-5f897ff02aa9"
+  },
+  smartwatches: {
+    Apple: "1508685096489-7aacd43bd3b1",
+    Samsung: "1523275335684-37898b6baf30",
+    Garmin: "1523275335684-37898b6baf30",
+    Fitbit: "1579586337278-3befd40fd17a"
+  },
+  cameras: {
+    Sony: "1616440347437-b1c73416efc2",
+    Canon: "1516035069371-29a1b244cc32",
+    Nikon: "1500643752441-4dcf4006b50f",
+    Fujifilm: "1607604276583-eef5d076aa5f",
+    Panasonic: "1502920917128-1aa500764cbd"
+  },
+  headphones: {
+    Sony: "1505740420928-5e560c06d30e",
+    Bose: "1546435770-a3e426bf472b",
+    Sennheiser: "1484704849700-f032a568e944",
+    JBL: "1618384887929-16ec33fab9ef"
+  }
+};
+
 const MODEL_ADJECTIVES = ["Pro", "Ultra", "Elite", "Max", "Air", "Prime", "Gaming", "Slim", "Classic", "Plus", "Edition", "Studio", "Strix", "TUF", "IdeaPad", "Inspiron", "ZenBook", "Galaxy", "Pixel", "XPS"];
 const AUDIENCES = ["Students", "Gamers", "Professionals", "Office Workers", "Audiophiles", "Fitness Enthusiasts", "Casual Users", "Developers", "Creators"];
 
@@ -402,8 +440,13 @@ function generateProductDataset() {
       const specsString = Object.entries(specs).map(([k, v]) => `${k}: ${v}`).join(", ");
       const searchableText = `${title} ${brand} ${categoryName} ${description} ${features.join(" ")} ${specsString} ${tags.join(" ")}`.toLowerCase();
 
-      const categoryImages = UNSPLASH_IMAGES[catKey] || [];
-      const imageId = categoryImages[i % categoryImages.length] || "1496181130204-7552cc14ac1a";
+            let imageId = "";
+      if (BRAND_IMAGES[catKey] && BRAND_IMAGES[catKey][brand]) {
+        imageId = BRAND_IMAGES[catKey][brand];
+      } else {
+        const categoryImages = UNSPLASH_IMAGES[catKey] || [];
+        imageId = categoryImages[i % categoryImages.length] || "1496181130204-7552cc14ac1a";
+      }
       const imageUrl = `https://images.unsplash.com/photo-${imageId}?auto=format&fit=crop&w=600&q=80`;
 
       const product = {

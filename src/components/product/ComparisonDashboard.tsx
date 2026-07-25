@@ -322,7 +322,7 @@ export default function ComparisonDashboard({ products, aiAnalysis }: Comparison
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {products.map((p, idx) => {
           const color = colors[idx % colors.length];
-          const insights = aiAnalysis?.prosCons[p._id.toString()] || {
+          const insights = (aiAnalysis && aiAnalysis.prosCons && aiAnalysis.prosCons[p._id.toString()]) || {
             pros: ["High quality hardware specs", "Reliable performance in catalog testing"],
             cons: ["Price premium over local brands"]
           };

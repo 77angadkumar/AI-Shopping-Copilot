@@ -12,13 +12,14 @@ import { Button } from "@/components/ui/button";
 import ComparisonDashboard from "@/components/product/ComparisonDashboard";
 
 interface ComparePageProps {
-  searchParams: {
+  searchParams: Promise<{
     ids?: string;
-  };
+  }>;
 }
 
 export default async function ComparePage({ searchParams }: ComparePageProps) {
-  const idsString = searchParams.ids || "";
+  const resolvedParams = await searchParams;
+  const idsString = resolvedParams.ids || "";
   const productIds = idsString.split(",").filter(Boolean);
 
   await connectToDatabase();

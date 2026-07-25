@@ -270,7 +270,7 @@ ID: ${p._id}
 Title: ${p.title}
 Price: ₹${p.price}
 Specs: ${JSON.stringify(p.specifications)}
-Reviews: ${p.reviews.join(" | ")}`).join("\n\n");
+Reviews: ${(p.reviews || []).join(" | ")}`).join("\n\n");
 
       const response = await openai.chat.completions.create({
         model: "gpt-4o-mini",
