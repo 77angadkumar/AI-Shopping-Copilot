@@ -50,7 +50,7 @@ export default function Navbar() {
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-1.5 hover:opacity-95">
             <span className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-amber-400 to-amber-500 bg-clip-text text-transparent flex items-center">
-              amz<span className="text-white font-semibold">Rufus</span>
+              Shop<span className="text-white font-semibold">product</span>
             </span>
             <span className="hidden sm:inline-block text-xs font-semibold px-2 py-0.5 rounded bg-amber-500 text-black ml-1">
               AI Shopping Partner
@@ -97,7 +97,7 @@ export default function Navbar() {
           {/* Quick link to chat */}
           <Link href="/chat" className="hidden sm:block">
             <Button variant="accent" size="sm" className="gap-1 shadow-md">
-              Ask Rufus <ChevronRight className="h-4 w-4" />
+              Shop product <ChevronRight className="h-4 w-4" />
             </Button>
           </Link>
         </div>

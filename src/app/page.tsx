@@ -74,13 +74,13 @@ export default function Home() {
         <section className="bg-gradient-to-b from-primary to-secondary text-primary-foreground py-16 px-4 text-center">
           <div className="max-w-4xl mx-auto">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold mb-4 border border-amber-500/30">
-              <Sparkles className="h-3.5 w-3.5" /> Introducing amzRufus AI
+              <Sparkles className="h-3.5 w-3.5" /> Introducing Shop product AI
             </span>
             <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight mb-4 leading-tight">
               Compare Products & Choose Smarter with <span className="text-amber-400">Conversational AI</span>
             </h1>
             <p className="text-sm md:text-lg text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Rufus helps you navigate the catalog, contrasts specifications, analyzes user reviews, and solves your shopping queries.
+              Shop product helps you navigate the catalog, contrasts specifications, analyzes user reviews, and solves your shopping queries.
             </p>
 
             {/* NL Search bar */}
@@ -89,7 +89,7 @@ export default function Home() {
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
                   type="text"
-                  placeholder="Ask Rufus (e.g., suggest a coding laptop under 80k)..."
+                  placeholder="Ask Shop product (e.g., suggest a coding laptop under 80k)..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-11 pr-12 h-12 text-base shadow-lg border-2 border-transparent bg-card text-foreground focus:border-amber-500"
@@ -104,7 +104,7 @@ export default function Home() {
                 </button>
               </div>
               <Button type="submit" variant="accent" className="h-12 px-6 font-bold cursor-pointer">
-                Ask Rufus
+                Ask AI
               </Button>
             </form>
           </div>
@@ -144,7 +144,7 @@ export default function Home() {
               </h2>
             </div>
             <Link href="/chat" className="text-xs font-semibold text-amber-500 hover:underline flex items-center gap-1">
-              Ask Rufus Chatbot <ChevronRight className="h-3.5 w-3.5" />
+              Ask Shop product Chatbot <ChevronRight className="h-3.5 w-3.5" />
             </Link>
           </div>
 

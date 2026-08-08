@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "AI Shopping Copilot",
-  description: "An Amazon Rufus-style Conversational Shopping Assistant",
+  title: "Shop product - AI Shopping Copilot",
+  description: "Shop product - Conversational AI Shopping Assistant",
 };
 
 export default function RootLayout({

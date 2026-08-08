@@ -7,9 +7,9 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h4 className="text-sm font-semibold uppercase tracking-wider mb-3">amzRufus Assistant</h4>
+            <h4 className="text-sm font-semibold uppercase tracking-wider mb-3">Shop product Assistant</h4>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              A premium, full-stack GenAI AI Shopping Assistant mimicking Amazon's conversational advisor. 
+              A premium, full-stack GenAI AI Shopping Assistant mimicking a conversational advisor. 
               Supports semantic RAG, side-by-side spec comparison, multi-turn memory, and voice inputs.
             </p>
           </div>
@@ -34,7 +34,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="border-t border-border/50 mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-muted-foreground">
-          <p>© {new Date().getFullYear()} amzRufus. Created as a production-grade GenAI HackOn project.</p>
+          <p>© {new Date().getFullYear()} Shop product. Created as a production-grade GenAI HackOn project.</p>
           <div className="flex gap-4 mt-4 sm:mt-0">
             <Link href="/" className="hover:underline">Privacy Policy</Link>
             <Link href="/" className="hover:underline">Terms of Service</Link>

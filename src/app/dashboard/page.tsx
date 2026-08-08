@@ -181,7 +181,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                             Specs
                           </Link>
                           <Link href={`/chat?q=Tell me more about the ${encodeURIComponent(item.title)}`} className="text-amber-500 font-bold hover:underline">
-                            Ask Rufus
+                            Ask Shop product
                           </Link>
                         </div>
                       </div>

@@ -211,7 +211,7 @@ export default function ProductCard({
               size="icon"
               onClick={() => onAskRufus(product.title)}
               className="h-8 w-8 hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer"
-              title="Ask Rufus about this product"
+              title="Ask Shop product about this product"
             >
               <MessageSquare className="h-4 w-4" />
             </Button>

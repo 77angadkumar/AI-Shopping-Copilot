@@ -240,7 +240,7 @@ export default function ChatWindow() {
             <Sparkles className="h-5 w-5" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-foreground">Ask Rufus AI</h2>
+            <h2 className="text-sm font-bold text-foreground">Ask Shop product AI</h2>
             <p className="text-[10px] text-muted-foreground">Grounded on real-time product features and reviews</p>
           </div>
         </div>
@@ -314,7 +314,7 @@ export default function ChatWindow() {
             <div className="relative flex-grow">
               <Input
                 type="text"
-                placeholder="Ask Rufus (e.g. Compare the 1st and 2nd products)..."
+                placeholder="Ask Shop product (e.g. Compare the 1st and 2nd products)..."
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 disabled={isLoading}

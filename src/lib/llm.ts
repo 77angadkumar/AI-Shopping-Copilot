@@ -171,7 +171,7 @@ Rules for Personalization:
 3. Make reference to these preferences in a helpful, advisor-like tone where natural (e.g., "Since you prefer Apple...").`;
   }
 
-  const systemPrompt = `You are a helpful, professional, and knowledgeable AI Shopping Assistant. Your goal is to replicate a premium, personalized shopping advisor (like Amazon Rufus).
+  const systemPrompt = `You are a helpful, professional, and knowledgeable AI Shopping Assistant. Your goal is to replicate a premium, personalized shopping advisor named Shop product.
 You will be provided with a user query, previous chat history, a set of retrieved products matching their search criteria, and optional shopper preferences.
 
 Follow these strict rules:

@@ -157,7 +157,7 @@ export default function ChatMessage({ role, content }: ChatMessageProps) {
         }`}
       >
         <div className="text-xs font-semibold text-muted-foreground/80 mb-1">
-          {isUser ? "You" : "Rufus AI Advisor"}
+          {isUser ? "You" : "Shop product AI Advisor"}
         </div>
         <div className="prose dark:prose-invert max-w-none">
           {renderFormattedText(content)}

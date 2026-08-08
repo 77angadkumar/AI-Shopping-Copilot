@@ -100,7 +100,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
             <div className="flex justify-center my-6 gap-3">
               <Link href={`/chat?q=Which one is better: ${products.map(p => p.title).join(" or ")}?`}>
                 <Button variant="accent" className="gap-2 font-bold cursor-pointer">
-                  <Sparkles className="h-4 w-4" /> Ask Rufus Which is Better
+                  <Sparkles className="h-4 w-4" /> Ask Shop product Which is Better
                 </Button>
               </Link>
             </div>
