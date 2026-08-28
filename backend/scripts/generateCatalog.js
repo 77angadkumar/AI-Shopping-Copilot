@@ -547,8 +547,44 @@ const NEGATIVE_REVIEWS = [
   { title: "Poor build quality", text: "The materials used feel very plastic and flimsy. Speakers are crackly at high volume. Returning it." }
 ];
 
+function getInternetTemplatesForCategory(catKey, apiProducts) {
+  let matched = [];
+  if (catKey === "laptops") {
+    matched = apiProducts.filter(p => p.category === "laptops");
+  } else if (catKey === "smartphones") {
+    matched = apiProducts.filter(p => p.category === "smartphones");
+  } else if (catKey === "tablets") {
+    matched = apiProducts.filter(p => p.category === "tablets");
+  } else if (catKey === "smartwatches") {
+    matched = apiProducts.filter(p => p.category === "mens-watches" || p.category === "womens-watches");
+  } else if (catKey === "headphones" || catKey === "earbuds") {
+    matched = apiProducts.filter(p => p.category === "mobile-accessories" && (p.title.toLowerCase().includes("earbud") || p.title.toLowerCase().includes("headphone") || p.title.toLowerCase().includes("charger") || p.title.toLowerCase().includes("case")));
+    if (matched.length === 0) matched = apiProducts.filter(p => p.category === "mobile-accessories");
+  }
+  
+  if (matched.length > 0) {
+    return matched.map(p => ({
+      title: p.title,
+      brand: p.brand || "Generic",
+      price: Math.floor(p.price * 83),
+      originalPrice: Math.floor(p.price * 83 * (1 + (p.discountPercentage || 10) / 100)),
+      imageUrl: p.images?.[0] || p.thumbnail,
+      description: p.description,
+      rating: p.rating,
+      specs: {
+        Weight: p.weight ? `${p.weight}g` : "Unknown",
+        Warranty: p.warrantyInformation || "1 Year Warranty",
+        Return: p.returnPolicy || "30 Days Returns",
+        Dimensions: p.dimensions ? `${p.dimensions.width} x ${p.dimensions.height} cm` : "N/A"
+      },
+      features: p.reviews ? p.reviews.map(r => r.comment) : ["Premium high-quality build", "Excellent user reviews"]
+    }));
+  }
+  return null;
+}
+
 // Generator logic
-function generateProductDataset() {
+function generateProductDataset(apiProducts = []) {
   const products = [];
   const reviews = [];
 
@@ -573,248 +609,281 @@ function generateProductDataset() {
       let tags = [];
       let description = "";
       let imageId = "";
+      let imageUrl = "";
       
-      // Determine values by category
-      switch (catKey) {
-        case "laptops": {
-          const laptopPresets = REAL_PRODUCTS.laptops;
-          const basePreset = laptopPresets[i % laptopPresets.length];
-          const color = colors[i % colors.length];
-          const ram = basePreset.brand === "Apple" ? (i % 2 === 0 ? "8GB Unified" : "16GB Unified") : RAM_OPTIONS[i % RAM_OPTIONS.length] + " DDR5";
-          const storage = STORAGE_OPTIONS[i % STORAGE_OPTIONS.length];
-          
-          brand = basePreset.brand;
-          title = `${basePreset.title} - ${color} (${ram}, ${storage})`;
-          price = basePreset.price + (i % 3) * 5000;
-          originalPrice = Math.floor(price * (1 + (randomRange(5, 12) / 100)));
-          specs = {
-            ...basePreset.specs,
-            RAM: ram,
-            Storage: storage
-          };
-          features = [ ...basePreset.features ];
-          tags = [ ...basePreset.tags ];
-          description = basePreset.description;
-          imageId = basePreset.imageId;
-          break;
+      const templates = getInternetTemplatesForCategory(catKey, apiProducts);
+      if (templates && templates.length > 0) {
+        const basePreset = templates[i % templates.length];
+        brand = basePreset.brand;
+        const color = colors[i % colors.length];
+        
+        title = `${basePreset.title} - ${color}`;
+        price = basePreset.price + (i % 3) * 1500;
+        originalPrice = basePreset.originalPrice + (i % 3) * 1500;
+        
+        specs = {
+          ...basePreset.specs,
+          Color: color
+        };
+        
+        if (catKey === "laptops") {
+          specs.RAM = i % 2 === 0 ? "16GB DDR5" : "32GB DDR5";
+          specs.Storage = i % 2 === 0 ? "512GB SSD" : "1TB SSD";
+          specs.Processor = i % 2 === 0 ? "Intel Core i7" : "AMD Ryzen 7";
+        } else if (catKey === "smartphones") {
+          specs.RAM = i % 2 === 0 ? "8GB LPDDR5X" : "12GB LPDDR5X";
+          specs.Storage = i % 2 === 0 ? "128GB UFS 4.0" : "256GB UFS 4.0";
+        } else if (catKey === "smartwatches") {
+          specs.Size = i % 2 === 0 ? "40mm" : "44mm";
         }
-
-        case "smartphones": {
-          const phonePresets = REAL_PRODUCTS.smartphones;
-          const basePreset = phonePresets[i % phonePresets.length];
-          const color = colors[i % colors.length];
-          const storage = i % 2 === 0 ? "128GB" : "256GB";
-          
-          brand = basePreset.brand;
-          title = `${basePreset.title} - ${color} (${storage})`;
-          price = basePreset.price + (i % 3) * 3500;
-          originalPrice = Math.floor(price * (1 + (randomRange(5, 10) / 100)));
-          specs = {
-            ...basePreset.specs,
-            Storage: storage
-          };
-          features = [ ...basePreset.features ];
-          tags = [ ...basePreset.tags ];
-          description = basePreset.description;
-          imageId = basePreset.imageId;
-          break;
+        
+        features = [ ...basePreset.features ];
+        if (features.length < 4) {
+          features.push("Premium design chassis", "Reliable operational stability");
         }
+        tags = [catKey, brand.toLowerCase(), "electronic", "smart"];
+        description = basePreset.description;
+        imageId = ""; // Bypass Unsplash ID
+        imageUrl = basePreset.imageUrl;
+      } else {
+        // Determine values by category
+        switch (catKey) {
+          case "laptops": {
+            const laptopPresets = REAL_PRODUCTS.laptops;
+            const basePreset = laptopPresets[i % laptopPresets.length];
+            const color = colors[i % colors.length];
+            const ram = basePreset.brand === "Apple" ? (i % 2 === 0 ? "8GB Unified" : "16GB Unified") : RAM_OPTIONS[i % RAM_OPTIONS.length] + " DDR5";
+            const storage = STORAGE_OPTIONS[i % STORAGE_OPTIONS.length];
+            
+            brand = basePreset.brand;
+            title = `${basePreset.title} - ${color} (${ram}, ${storage})`;
+            price = basePreset.price + (i % 3) * 5000;
+            originalPrice = Math.floor(price * (1 + (randomRange(5, 12) / 100)));
+            specs = {
+              ...basePreset.specs,
+              RAM: ram,
+              Storage: storage
+            };
+            features = [ ...basePreset.features ];
+            tags = [ ...basePreset.tags ];
+            description = basePreset.description;
+            imageId = basePreset.imageId;
+            break;
+          }
 
-        case "tablets":
-          title = `${brand} Tab ${adjective} ${modelNum}`;
-          if (brand === "Apple") title = `${brand} iPad ${adjective} ${randomChoice(["Air", "Pro", "Mini"])}`;
-          price = brand === "Apple" ? randomRange(35900, 99999) : randomRange(14000, 45000);
-          originalPrice = Math.floor(price * (1 + randomRange(5, 18) / 100));
+          case "smartphones": {
+            const phonePresets = REAL_PRODUCTS.smartphones;
+            const basePreset = phonePresets[i % phonePresets.length];
+            const color = colors[i % colors.length];
+            const storage = i % 2 === 0 ? "128GB" : "256GB";
+            
+            brand = basePreset.brand;
+            title = `${basePreset.title} - ${color} (${storage})`;
+            price = basePreset.price + (i % 3) * 3500;
+            originalPrice = Math.floor(price * (1 + (randomRange(5, 10) / 100)));
+            specs = {
+              ...basePreset.specs,
+              Storage: storage
+            };
+            features = [ ...basePreset.features ];
+            tags = [ ...basePreset.tags ];
+            description = basePreset.description;
+            imageId = basePreset.imageId;
+            break;
+          }
 
-          specs = {
-            Processor: brand === "Apple" ? "M1/M2 Silicon" : "Octa-core MediaTek/Exynos",
-            RAM: randomChoice(["4GB", "6GB", "8GB"]),
-            Storage: randomChoice(["64GB", "128GB", "256GB"]),
-            Display: `${randomChoice(["10.1", "10.9", "11", "12.4"])}-inch screen`,
-            Battery: `${randomRange(6000, 10000)} mAh`,
-            OS: brand === "Apple" ? "iPadOS" : "Android Tab Edition",
-            Weight: `${randomRange(440, 580)}g`
-          };
-          features = [
-            "Magnetic active stylus support inside box",
-            "Quad stereophonic entertainment speakers",
-            "Desktop DeX / Stage Manager window management mode",
-            "Slim lightweight metallic alloy body"
-          ];
-          tags = ["tablet", "ipad", "drawing", "media", "screen", "school", "kids", "android", "ipados"];
-          description = `A large-screen versatile ${categoryName.toLowerCase()} from ${brand} designed for digital drawings, taking university notes, watching videos, and lightweight work. Compatible with keyboards and drawing stylus accessories.`;
-          break;
+          case "tablets":
+            title = `${brand} Tab ${adjective} ${modelNum}`;
+            if (brand === "Apple") title = `${brand} iPad ${adjective} ${randomChoice(["Air", "Pro", "Mini"])}`;
+            price = brand === "Apple" ? randomRange(35900, 99999) : randomRange(14000, 45000);
+            originalPrice = Math.floor(price * (1 + randomRange(5, 18) / 100));
 
-        case "smartwatches": {
-          const watchPresets = REAL_PRODUCTS.smartwatches;
-          const basePreset = watchPresets[i % watchPresets.length];
-          const strapColor = strapColors[i % strapColors.length];
-          const size = i % 2 === 0 ? "40mm" : "44mm";
-          
-          brand = basePreset.brand;
-          title = `${basePreset.title} - ${strapColor} Strap (${size})`;
-          price = basePreset.price + (i % 3) * 1500;
-          originalPrice = Math.floor(price * (1 + (randomRange(10, 20) / 100)));
-          specs = {
-            ...basePreset.specs,
-            Size: size
-          };
-          features = [ ...basePreset.features ];
-          tags = [ ...basePreset.tags ];
-          description = basePreset.description;
-          imageId = basePreset.imageId;
-          break;
+            specs = {
+              Processor: brand === "Apple" ? "M1/M2 Silicon" : "Octa-core MediaTek/Exynos",
+              RAM: randomChoice(["4GB", "6GB", "8GB"]),
+              Storage: randomChoice(["64GB", "128GB", "256GB"]),
+              Display: `${randomChoice(["10.1", "10.9", "11", "12.4"])}-inch screen`,
+              Battery: `${randomRange(6000, 10000)} mAh`,
+              OS: brand === "Apple" ? "iPadOS" : "Android Tab Edition",
+              Weight: `${randomRange(440, 580)}g`
+            };
+            features = [
+              "Magnetic active stylus support inside box",
+              "Quad stereophonic entertainment speakers",
+              "Desktop DeX / Stage Manager window management mode",
+              "Slim lightweight metallic alloy body"
+            ];
+            tags = ["tablet", "ipad", "drawing", "media", "screen", "school", "kids", "android", "ipados"];
+            description = `A large-screen versatile ${categoryName.toLowerCase()} from ${brand} designed for digital drawings, taking university notes, watching videos, and lightweight work. Compatible with keyboards and drawing stylus accessories.`;
+            break;
+
+          case "smartwatches": {
+            const watchPresets = REAL_PRODUCTS.smartwatches;
+            const basePreset = watchPresets[i % watchPresets.length];
+            const strapColor = strapColors[i % strapColors.length];
+            const size = i % 2 === 0 ? "40mm" : "44mm";
+            
+            brand = basePreset.brand;
+            title = `${basePreset.title} - ${strapColor} Strap (${size})`;
+            price = basePreset.price + (i % 3) * 1500;
+            originalPrice = Math.floor(price * (1 + (randomRange(10, 20) / 100)));
+            specs = {
+              ...basePreset.specs,
+              Size: size
+            };
+            features = [ ...basePreset.features ];
+            tags = [ ...basePreset.tags ];
+            description = basePreset.description;
+            imageId = basePreset.imageId;
+            break;
+          }
+
+          case "cameras": {
+            const cameraPresets = REAL_PRODUCTS.cameras;
+            const basePreset = cameraPresets[i % cameraPresets.length];
+            const lensKit = i % 2 === 0 ? "Body Only" : "with 28-70mm Lens Kit";
+            
+            brand = basePreset.brand;
+            title = `${basePreset.title} Mirrorless Camera (${lensKit})`;
+            price = basePreset.price + (i % 2) * 18000;
+            originalPrice = Math.floor(price * (1 + (randomRange(5, 12) / 100)));
+            specs = {
+              ...basePreset.specs,
+              "Lens Kit": lensKit
+            };
+            features = [ ...basePreset.features ];
+            tags = [ ...basePreset.tags ];
+            description = basePreset.description;
+            imageId = basePreset.imageId;
+            break;
+          }
+
+          case "headphones": {
+            const audioPresets = REAL_PRODUCTS.headphones;
+            const basePreset = audioPresets[i % audioPresets.length];
+            const color = i % 2 === 0 ? "Carbon Black" : "Silver Sand";
+            
+            brand = basePreset.brand;
+            title = `${basePreset.title} Wireless ANC - ${color}`;
+            price = basePreset.price + (i % 3) * 1200;
+            originalPrice = Math.floor(price * (1 + (randomRange(10, 18) / 100)));
+            specs = {
+              ...basePreset.specs,
+              Color: color
+            };
+            features = [ ...basePreset.features ];
+            tags = [ ...basePreset.tags ];
+            description = basePreset.description;
+            imageId = basePreset.imageId;
+            break;
+          }
+
+          case "earbuds":
+            title = `${brand} Buds ${adjective} ${modelNum} TWS`;
+            price = brand === "Sony" || brand === "Bose" ? randomRange(9999, 19999) : randomRange(999, 4999);
+            originalPrice = Math.floor(price * (1 + randomRange(10, 35) / 100));
+
+            specs = {
+              "Driver Size": `${randomChoice(["6mm", "10mm", "12mm"])} Dynamic`,
+              "Battery Life": `${randomRange(20, 45)} hours with charging case`,
+              Waterproof: randomChoice(["IPX4", "IPX5", "IPX7"]),
+              "Bluetooth Version": "Bluetooth 5.3"
+            };
+            features = [
+              "Touch controls for easy playback and call handling",
+              "Sweat and water-resistant for intense workouts",
+              "Compact charging case slips easily into pocket",
+              "Voice assistant support for Siri and Google Assistant"
+            ];
+            tags = ["earbud", "earbuds", "tws", "audio", "music", "bluetooth", "wireless", "portable", "jbl", "sony"];
+            description = `Enjoy wire-free acoustics with ${brand}'s sleek ${categoryName.toLowerCase()}. Formed with ${specs.Waterproof} water protection and delivering up to ${specs["Battery Life"]} of backup charge.`;
+            break;
+
+          case "monitors":
+            title = `${brand} ${adjective} ${randomChoice(["24-inch", "27-inch", "32-inch", "34-inch UltraWide"])} Monitor`;
+            price = brand === "LG" || brand === "Samsung" ? randomRange(12999, 49999) : randomRange(6999, 18999);
+            originalPrice = Math.floor(price * (1 + randomRange(10, 25) / 100));
+
+            specs = {
+              "Screen Size": title.split(" ")[1],
+              Resolution: randomChoice(["FHD (1920x1080)", "QHD (2560x1440)", "4K UHD (3840x2160)"]),
+              Panel: randomChoice(["IPS", "VA", "OLED"]),
+              "Refresh Rate": randomChoice(["60Hz", "75Hz", "144Hz", "165Hz", "240Hz"]),
+              "Aspect Ratio": title.includes("UltraWide") ? "21:9" : "16:9"
+            };
+            features = [
+              "Anti-glare screen coating prevents eye fatigue",
+              "AMD FreeSync / NVIDIA G-Sync compatible",
+              "Height adjustable stand with tilt and swivel",
+              "Dual HDMI and DisplayPort inputs built-in"
+            ];
+            tags = ["monitor", "monitors", "display", "screen", "4k", "ips", "office", "gaming", "samsung", "lg"];
+            description = `Upgrade your productivity or gaming station with ${brand}'s vibrant ${categoryName.toLowerCase()}. Built with a high refresh-rate ${specs.Panel} panel and ${specs.Resolution} clarity.`;
+            break;
+
+          case "keyboards":
+            title = `${brand} ${adjective} Mechanical Gaming Keyboard`;
+            price = brand === "Logitech" || brand === "Razer" ? randomRange(4999, 14999) : randomRange(999, 3999);
+            originalPrice = Math.floor(price * (1 + randomRange(10, 30) / 100));
+
+            specs = {
+              Layout: randomChoice(["Full-Size (100%)", "Tenkeyless (80%)", "Compact (60% / 65%)"]),
+              Switch: randomChoice(["Linear Red Switches", "Tactile Brown Switches", "Clicky Blue Switches"]),
+              Backlight: randomChoice(["Per-key RGB", "Zone RGB", "White LED", "None"]),
+              Weight: `${randomRange(600, 1100)}g`
+            };
+            features = [
+              "Durable double-shot PBT keycaps prevent wear",
+              "Detachable USB Type-C braided cable",
+              "Dedicated media controls and volume roller",
+              "Full N-key rollover with 100% anti-ghosting"
+            ];
+            tags = ["keyboard", "keyboards", "rgb", "mechanical", "gaming", "typing", "office", "logitech", "razer"];
+            description = `Get absolute speed and tactile key responses with ${brand}'s mechanical ${categoryName.toLowerCase()}. Crafted with premium ${specs.Switch} and full customizable RGB options.`;
+            break;
+
+          case "mice":
+            title = `${brand} ${adjective} Precision Wireless Mouse`;
+            price = brand === "Logitech" || brand === "Razer" ? randomRange(2999, 9999) : randomRange(499, 1999);
+            originalPrice = Math.floor(price * (1 + randomRange(10, 30) / 100));
+
+            specs = {
+              MaxDPI: `${randomChoice(["8000", "12000", "16000", "20000", "26000"])} DPI`,
+              Buttons: `${randomRange(5, 11)} Programmable Buttons`,
+              Weight: `${randomRange(59, 120)}g`,
+              Connectivity: randomChoice(["USB Wired", "LightSpeed 2.4GHz Wireless + Bluetooth", "Bluetooth + Wired"])
+            };
+            features = [
+              "Ultra-lightweight design for effortless fast glides",
+              "Zero-latency wireless connection system",
+              "Optical mouse switches rated for 80 million clicks",
+              "Ergonomic contoured grip reduces hand fatigue"
+            ];
+            tags = ["mouse", "mice", "precision", "gaming", "office", "wireless", "rgb", "dpi", "logitech", "razer"];
+            description = `Navigate with total accuracy using ${brand}'s ergonomic ${categoryName.toLowerCase()}. Boasting an adjustable ${specs.MaxDPI} optical sensor and customizable buttons, it provides tracking for professional graphics and gaming.`;
+            break;
+
+          case "gaming_accessories":
+            title = `${brand} ${adjective} Pro Gaming ${randomChoice(["Headset", "Controller", "Desk Mat", "Stream Mic", "Chair"])}`;
+            price = randomRange(1499, 19999);
+            originalPrice = Math.floor(price * (1 + randomRange(10, 30) / 100));
+
+            specs = {
+              Compatibility: "PC, PS5, Xbox Series X/S, Nintendo Switch, Mobile",
+              RGB: randomChoice(["Chroma RGB supported", "Static lighting", "No RGB"]),
+              Connection: "USB Wired / 2.4GHz Low-Latency Wireless",
+              Weight: `${randomRange(250, 450)}g`
+            };
+            features = [
+              "Custom-tuned audio drivers / low-drift analog sticks",
+              "Premium breathable mesh cushions or leather finishes",
+              "Noise-cancelling detachable cardiod microphone",
+              "Heavy-duty solid steel reinforcement frame"
+            ];
+            tags = ["gaming", "gamer", "accessory", "headset", "rgb", "xbox", "ps5", "razer", "pc"];
+            description = `Take your gaming setups to elite levels with ${brand}'s premium ${categoryName.toLowerCase()}. Formed from durable alloys and engineered for low latency, it provides the ultimate competitive advantage.`;
+            break;
         }
-
-        case "cameras": {
-          const cameraPresets = REAL_PRODUCTS.cameras;
-          const basePreset = cameraPresets[i % cameraPresets.length];
-          const lensKit = i % 2 === 0 ? "Body Only" : "with 28-70mm Lens Kit";
-          
-          brand = basePreset.brand;
-          title = `${basePreset.title} Mirrorless Camera (${lensKit})`;
-          price = basePreset.price + (i % 2) * 18000;
-          originalPrice = Math.floor(price * (1 + (randomRange(5, 12) / 100)));
-          specs = {
-            ...basePreset.specs,
-            "Lens Kit": lensKit
-          };
-          features = [ ...basePreset.features ];
-          tags = [ ...basePreset.tags ];
-          description = basePreset.description;
-          imageId = basePreset.imageId;
-          break;
-        }
-
-        case "headphones": {
-          const audioPresets = REAL_PRODUCTS.headphones;
-          const basePreset = audioPresets[i % audioPresets.length];
-          const color = i % 2 === 0 ? "Carbon Black" : "Silver Sand";
-          
-          brand = basePreset.brand;
-          title = `${basePreset.title} Wireless ANC - ${color}`;
-          price = basePreset.price + (i % 3) * 1200;
-          originalPrice = Math.floor(price * (1 + (randomRange(10, 18) / 100)));
-          specs = {
-            ...basePreset.specs,
-            Color: color
-          };
-          features = [ ...basePreset.features ];
-          tags = [ ...basePreset.tags ];
-          description = basePreset.description;
-          imageId = basePreset.imageId;
-          break;
-        }
-
-        case "earbuds":
-          title = `${brand} Buds ${adjective} ${modelNum} TWS`;
-          price = brand === "Apple" || brand === "Sony" || brand === "Bose" ? randomRange(12900, 24900) : randomRange(1499, 6999);
-          originalPrice = Math.floor(price * (1 + randomRange(10, 35) / 100));
-
-          specs = {
-            "Driver Size": `${randomChoice(["6mm", "8mm", "10mm", "11mm"])} Dynamic`,
-            "Noise Cancellation": randomChoice(["Active Noise Cancelling", "Smart ANC", "Passive"]),
-            "Battery Life": `${randomRange(5, 10)} hours (Up to ${randomRange(24, 40)} hours with case)`,
-            "Bluetooth Version": "Bluetooth 5.3",
-            Weight: `${randomFloat(4.2, 5.8)}g per earbud`
-          };
-          features = [
-            "IPX5 splash and sweat resistance rating",
-            "Personalized spatial audio tuning with head tracking",
-            "Ergonomic fit with multiple silicone ear tips",
-            "Ultra-compact charging case fits in coin pockets"
-          ];
-          tags = ["earbud", "earbuds", "earphone", "tws", "audio", "gym", "wireless", "sound", "sports"];
-          description = `Sleek true wireless ${categoryName.toLowerCase()} from ${brand}. Packed with high-fidelity acoustics, smart touch controls, and sweat resistance, making them ideal companions for the gym, commute, and daily calls.`;
-          break;
-
-        case "monitors":
-          title = `${brand} UltraSync ${randomRange(24, 34)}-inch Monitor`;
-          price = brand === "Samsung" || brand === "Dell" || brand === "ASUS" ? randomRange(12000, 48000) : randomRange(7999, 18999);
-          originalPrice = Math.floor(price * (1 + randomRange(5, 25) / 100));
-
-          specs = {
-            "Display Size": `${randomChoice(["24", "27", "32", "34"])}-inch Diagonal`,
-            Resolution: randomChoice(["FHD (1920x1080)", "QHD (2560x1440)", "4K UHD (3840x2160)", "WQHD UltraWide"]),
-            "Panel Type": randomChoice(["IPS", "VA", "OLED"]),
-            "Refresh Rate": randomChoice(["60Hz", "75Hz", "144Hz", "165Hz", "240Hz"]),
-            "Response Time": `${randomChoice(["1ms", "4ms", "5ms"])} GtG`,
-            Connectivity: "HDMI, DisplayPort, USB Type-C Alt Mode"
-          };
-          features = [
-            "AMD FreeSync / G-Sync compatible for stutter-free gaming",
-            "HDR10 / HDR400 support for vivid high-contrast media",
-            "Flicker-Free technology with low blue light emission",
-            "Height adjustable ergonomic tilt & swivel stand"
-          ];
-          tags = ["monitor", "display", "screen", "office", "gaming", "ips", "4k", "setup", "desk"];
-          description = `Transform your workspace or battle station with ${brand}'s high-resolution ${categoryName.toLowerCase()}. Offering a gorgeous ${specs.Resolution} ${specs["Panel Type"]} screen with a high ${specs["Refresh Rate"]} refresh rate for clear image quality.`;
-          break;
-
-        case "keyboards":
-          title = `${brand} ${adjective} Mechanical Gaming Keyboard`;
-          price = brand === "Logitech" || brand === "Keychron" ? randomRange(45000 / 10, 14999) : randomRange(1299, 4999);
-          originalPrice = Math.floor(price * (1 + randomRange(10, 45) / 100));
-
-          specs = {
-            Layout: randomChoice(["Full-Size (100%)", "Tenkeyless (80%)", "Compact (75%)", "Ultra-Compact (60%)"]),
-            "Switch Type": randomChoice(["Cherry MX Red (Linear)", "Mechanical Brown (Tactile)", "Mechanical Blue (Clicky)", "Optical Linear", "Gateron G-Pro Yellow"]),
-            Backlight: randomChoice(["RGB per-key customization", "Rainbow LED backlights", "Single white LED backlight", "No backlight"]),
-            Connectivity: randomChoice(["USB Wired", "2.4GHz Wireless + Bluetooth + Wired", "Bluetooth only"]),
-            Weight: `${randomRange(600, 1100)}g`
-          };
-          features = [
-            "Double-shot ABS or PBT wear-resistant keycaps",
-            "Hot-swappable key-switch sockets for custom mods",
-            "N-key rollover anti-ghosting technology",
-            "Durable metal base frame prevents flex"
-          ];
-          tags = ["keyboard", "keyboards", "typing", "mechanical", "keychron", "rgb", "gaming", "switches"];
-          description = `A premium tactile ${categoryName.toLowerCase()} engineered by ${brand}. Features hot-swappable ${specs["Switch Type"]} switches in a solid frame with gorgeous ${specs.Backlight} lighting, built for programmers and gamers alike.`;
-          break;
-
-        case "mice":
-          title = `${brand} ${adjective} Precision Wireless Mouse`;
-          price = brand === "Logitech" || brand === "Razer" ? randomRange(1999, 12999) : randomRange(599, 2999);
-          originalPrice = Math.floor(price * (1 + randomRange(10, 50) / 100));
-
-          specs = {
-            Sensor: `${brand} Optical Sensor`,
-            MaxDPI: `${randomChoice(["8000", "12000", "16000", "20000", "26000"])} DPI`,
-            Buttons: `${randomRange(5, 11)} Programmable Buttons`,
-            Weight: `${randomRange(59, 120)}g`,
-            Connectivity: randomChoice(["USB Wired", "LightSpeed 2.4GHz Wireless + Bluetooth", "Bluetooth + Wired"])
-          };
-          features = [
-            "Ultra-lightweight design for effortless fast glides",
-            "Zero-latency wireless connection system",
-            "Optical mouse switches rated for 80 million clicks",
-            "Ergonomic contoured grip reduces hand fatigue"
-          ];
-          tags = ["mouse", "mice", "precision", "gaming", "office", "wireless", "rgb", "dpi", "logitech", "razer"];
-          description = `Navigate with total accuracy using ${brand}'s ergonomic ${categoryName.toLowerCase()}. Boasting an adjustable ${specs.MaxDPI} optical sensor and customizable buttons, it provides tracking for professional graphics and gaming.`;
-          break;
-
-        case "gaming_accessories":
-          title = `${brand} ${adjective} Pro Gaming ${randomChoice(["Headset", "Controller", "Desk Mat", "Stream Mic", "Chair"])}`;
-          price = randomRange(1499, 19999);
-          originalPrice = Math.floor(price * (1 + randomRange(10, 30) / 100));
-
-          specs = {
-            Compatibility: "PC, PS5, Xbox Series X/S, Nintendo Switch, Mobile",
-            RGB: randomChoice(["Chroma RGB supported", "Static lighting", "No RGB"]),
-            Connection: "USB Wired / 2.4GHz Low-Latency Wireless",
-            Weight: `${randomRange(250, 450)}g`
-          };
-          features = [
-            "Custom-tuned audio drivers / low-drift analog sticks",
-            "Premium breathable mesh cushions or leather finishes",
-            "Noise-cancelling detachable cardiod microphone",
-            "Heavy-duty solid steel reinforcement frame"
-          ];
-          tags = ["gaming", "gamer", "accessory", "headset", "rgb", "xbox", "ps5", "razer", "pc"];
-          description = `Take your gaming setups to elite levels with ${brand}'s premium ${categoryName.toLowerCase()}. Formed from durable alloys and engineered for low latency, it provides the ultimate competitive advantage.`;
-          break;
       }
 
       // Calculate discount percentage
@@ -833,11 +902,13 @@ function generateProductDataset() {
       const specsString = Object.entries(specs).map(([k, v]) => `${k}: ${v}`).join(", ");
       const searchableText = `${title} ${brand} ${categoryName} ${description} ${features.join(" ")} ${specsString} ${tags.join(" ")}`.toLowerCase();
 
-      if (!imageId) {
+      if (imageId) {
+        imageUrl = `https://images.unsplash.com/photo-${imageId}?auto=format&fit=crop&w=600&q=80`;
+      } else if (!imageUrl) {
         const categoryImages = UNSPLASH_IMAGES[catKey] || [];
-        imageId = categoryImages[i % categoryImages.length] || "1496181130204-7552cc14ac1a";
+        const fallbackId = categoryImages[i % categoryImages.length] || "1496181130204-7552cc14ac1a";
+        imageUrl = `https://images.unsplash.com/photo-${fallbackId}?auto=format&fit=crop&w=600&q=80`;
       }
-      const imageUrl = `https://images.unsplash.com/photo-${imageId}?auto=format&fit=crop&w=600&q=80`;
 
       const product = {
         _id: id,
@@ -910,19 +981,34 @@ function generateProductDataset() {
   return { products, reviews };
 }
 
-console.log("Generating 500 products and associated reviews dataset...");
-const data = generateProductDataset();
+async function run() {
+  console.log("Fetching real product data from the internet API...");
+  let apiProducts = [];
+  try {
+    const response = await fetch("https://dummyjson.com/products?limit=200");
+    const result = await response.json();
+    apiProducts = result.products || [];
+    console.log(`Successfully retrieved ${apiProducts.length} products from the internet!`);
+  } catch (err) {
+    console.error("Failed to fetch products from internet, falling back to local database presets...", err);
+  }
 
-console.log(`Writing ${data.products.length} products to products.json...`);
-fs.writeFileSync(
-  path.join(DATA_DIR, "products.json"),
-  JSON.stringify(data.products, null, 2)
-);
+  console.log("Generating 550 products and associated reviews dataset...");
+  const data = generateProductDataset(apiProducts);
 
-console.log(`Writing ${data.reviews.length} reviews to reviews.json...`);
-fs.writeFileSync(
-  path.join(DATA_DIR, "reviews.json"),
-  JSON.stringify(data.reviews, null, 2)
-);
+  console.log(`Writing ${data.products.length} products to products.json...`);
+  fs.writeFileSync(
+    path.join(DATA_DIR, "products.json"),
+    JSON.stringify(data.products, null, 2)
+  );
 
-console.log("Generation complete! Datasets placed in backend/data/.");
+  console.log(`Writing ${data.reviews.length} reviews to reviews.json...`);
+  fs.writeFileSync(
+    path.join(DATA_DIR, "reviews.json"),
+    JSON.stringify(data.reviews, null, 2)
+  );
+
+  console.log("Generation complete! Datasets placed in backend/data/.");
+}
+
+run();
